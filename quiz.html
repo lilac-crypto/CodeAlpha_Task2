@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phishing Awareness Quiz</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9fafb;
+    max-width: 720px;
+    margin: 30px auto;
+    padding: 20px;
+    color: #2c3e50;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .quiz-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  }
+  .question-block {
+    margin-bottom: 25px;
+  }
+  p.question {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  label {
+    display: block;
+    margin: 6px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  label:hover {
+    background: #e8f0fe;
+    border-color: #4285f4;
+  }
+  button {
+    display: block;
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 14px 25px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 20px auto 0;
+    width: 100%;
+    max-width: 250px;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #357ae8;
+  }
+  .result {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .correct {
+    color: green;
+    font-weight: 600;
+  }
+  .incorrect {
+    color: red;
+    font-weight: 600;
+  }
+  .answer-feedback {
+    font-size: 0.9rem;
+    margin-left: 22px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Phishing Awareness Quiz</h1>
+<div class="quiz-container">
+  <form id="quizForm">
+    <!-- Questions injected here -->
+  </form>
+  <button id="submitBtn">Submit Answers</button>
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+  // 30 quiz questions
+  const quizBank = [
+    {question:"What is phishing?", options:["A sport","A cyber attack","A recipe","A backup method"], answer:"A cyber attack"},
+    {question:"Which is a common sign of a phishing email?", options:["Spelling mistakes","Professional language","Official domain","Secure attachment"], answer:"Spelling mistakes"},
+    {question:"What should you check in a suspicious email?", options:["Sender address","Email color","Attachment name","Font size"], answer:"Sender address"},
+    {question:"What does HTTPS indicate?", options:["Hacked website","No encryption","Encrypted connection","Unsafe site"], answer:"Encrypted connection"},
+    {question:"What is social engineering?", options:["Using new software","Tricking people","Designing apps","Cloud storage"], answer:"Tricking people"},
+    {question:"Which is a safe password?", options:["123456","password","MyName123","Xy!8@kL#2"], answer:"Xy!8@kL#2"},
+    {question:"What is a phishing website?", options:["Search engine","Fake site mimicking real one","Bank portal","News site"], answer:"Fake site mimicking real one"},
+    {question:"How to verify email authenticity?", options:["Click link","Check domain","Ignore it","Forward to all"], answer:"Check domain"},
+    {question:"Which of the following is NOT a phishing attempt?", options:["Fake login page","Malware link","Security training email","Urgent bank alert"], answer:"Security training email"},
+    {question:"What is spear phishing?", options:["Mass email","Spam","Targeted scam","Clickbait"], answer:"Targeted scam"},
+    {question:"What does a padlock symbol in browser mean?", options:["Dangerous site","Encrypted connection","Pop-up blocked","No password"], answer:"Encrypted connection"},
+    {question:"When should you report an email?", options:["Always","When it’s suspicious","After replying","If no reply"], answer:"When it’s suspicious"},
+    {question:"What’s the best reaction to phishing email?", options:["Reply politely","Click all links","Ignore and delete","Mark as favorite"], answer:"Ignore and delete"},
+    {question:"Why is public Wi-Fi risky?", options:["It's fast","No password","May allow data interception","Too crowded"], answer:"May allow data interception"},
+    {question:"Phishing tries to steal your?", options:["Food","Login info","TV","Books"], answer:"Login info"},
+    {question:"How can companies reduce phishing?", options:["Using firewalls","User awareness training","New laptops","Larger inboxes"], answer:"User awareness training"},
+    {question:"Why are phishing attacks dangerous?", options:["Time consuming","Annoying","Steal sensitive data","Increase calls"], answer:"Steal sensitive data"},
+    {question:"A typical phishing email might say?", options:["Hello friend","Your account is compromised","Happy birthday","Watch this cat video"], answer:"Your account is compromised"},
+    {question:"Is it safe to enter passwords on any site?", options:["Yes","Only if asked","Only on secure sites","Always"], answer:"Only on secure sites"},
+    {question:"What's a red flag in email?", options:["Greeting","Formal language","Urgency with link","Grammatical correctness"], answer:"Urgency with link"},
+    {question:"Which email is suspicious?", options:["newsletter@trusted.com","security@amaz0n.com","support@bank.com","hello@college.edu"], answer:"security@amaz0n.com"},
+    {question:"When in doubt about a link?", options:["Click it fast","Verify it first","Ignore forever","Save it"], answer:"Verify it first"},
+    {question:"Phishing attacks may use?", options:["Phone calls","Emails","Texts","All of the above"], answer:"All of the above"},
+    {question:"Why do hackers use fake websites?", options:["Fun","For SEO","To steal data","To help you"], answer:"To steal data"},
+    {question:"Which is safest action?", options:["Share passwords","Use same password","Use password manager","Write on paper"], answer:"Use password manager"},
+    {question:"Common phishing tactic is?", options:["Requesting urgent action","Sending greetings","Following up","Ignoring emails"], answer:"Requesting urgent action"},
+    {question:"How often should you change your passwords?", options:["Never","Monthly","When needed","Every login"], answer:"When needed"},
+    {question:"What’s a clone phishing?", options:["Duplicate app","Copied email content","Cloning hardware","Fake ID"], answer:"Copied email content"},
+    {question:"Which is safe practice?", options:["Click unknown links","Disable antivirus","Report phishing","Use same password"], answer:"Report phishing"},
+    {question:"What's a phishing lure?", options:["Bait used in scam","Fish catching tool","Real login page","USB"], answer:"Bait used in scam"}
+  ];
+
+  function pickRandomQuestions(bank, count=5) {
+    const shuffled = bank.slice().sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+
+  const quizForm = document.getElementById('quizForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const resultDiv = document.getElementById('result');
+
+  let selectedQuestions = pickRandomQuestions(quizBank);
+
+  function renderQuiz() {
+    let html = '';
+    selectedQuestions.forEach((q, i) => {
+      html += `<div class="question-block">
+                 <p class="question">${i+1}. ${q.question}</p>`;
+      q.options.forEach(option => {
+        const optionId = `q${i+1}_${option.replace(/\W/g, '')}`;
+        html += `<label for="${optionId}">
+                   <input type="radio" id="${optionId}" name="q${i+1}" value="${option}" required>
+                   ${option}
+                 </label>`;
+      });
+      html += `</div>`;
+    });
+    quizForm.innerHTML = html;
+    resultDiv.innerHTML = '';
+    submitBtn.style.display = 'block';
+  }
+
+  function calculateResults() {
+    let score = 0;
+    let feedbackHTML = '';
+
+    for(let i = 0; i < selectedQuestions.length; i++) {
+      const qName = `q${i+1}`;
+      const selectedOption = quizForm[qName].value;
+      if(selectedOption === selectedQuestions[i].answer) {
+        score++;
+        feedbackHTML += `<p><strong>Q${i+1}:</strong> <span class="correct">Correct!</span></p>`;
+      } else {
+        feedbackHTML += `<p><strong>Q${i+1}:</strong> <span class="incorrect">Incorrect.</span> Correct answer: <em>${selectedQuestions[i].answer}</em></p>`;
+      }
+    }
+
+    resultDiv.innerHTML = `
+      <p>You scored <strong>${score}</strong> out of ${selectedQuestions.length}.</p>
+      ${feedbackHTML}
+      <button id="retryBtn">Try Again</button>
+    `;
+    submitBtn.style.display = 'none';
+
+    document.getElementById('retryBtn').addEventListener('click', () => {
+      selectedQuestions = pickRandomQuestions(quizBank);
+      renderQuiz();
+    });
+  }
+
+  submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Ensure all questions answered
+    for(let i=1; i <= selectedQuestions.length; i++) {
+      if(!quizForm[`q${i}`].value) {
+        alert(`Please answer question ${i}`);
+        return;
+      }
+    }
+    calculateResults();
+  });
+
+  // Initial render
+  renderQuiz();
+</script>
+
+</body>
+</html>
